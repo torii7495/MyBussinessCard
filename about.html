@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Tori — Tori's Tech Home Help | Murfreesboro, TN</title>
+<link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #0017FF;
+    --blue-bright: #3040ff;
+    --blue-mid: #4455ff;
+    --blue-glow: rgba(0,23,255,0.35);
+    --blue-soft: rgba(0,23,255,0.10);
+    --black: #000000;
+    --near-black: #080810;
+    --white: #ffffff;
+    --gray: #9aa0c4;
+    --light-gray: #e8eaf5;
+    --card-bg: #0a0c1a;
+    --card-border: rgba(0,23,255,0.22);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--black);
+    color: var(--white);
+    overflow-x: hidden;
+    line-height: 1.75;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(0,23,255,0.18);
+  }
+  .nav-logo {
+    font-family: 'Eczar', serif; font-size: 1.15rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--blue) 0%, #6677ff 60%, var(--white) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.8rem; align-items: center; list-style: none; }
+  .nav-links a {
+    font-family: 'Lora', serif; font-size: 0.88rem; color: var(--gray);
+    text-decoration: none; letter-spacing: 0.04em; transition: color 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--white); }
+  .nav-cta {
+    background: var(--blue) !important; color: var(--white) !important;
+    padding: 0.45rem 1.2rem !important; border-radius: 4px;
+    font-weight: 600 !important; transition: background 0.2s, box-shadow 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--blue-bright) !important; box-shadow: 0 0 18px var(--blue-glow) !important; }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    padding: 9rem 2rem 5rem;
+    position: relative; overflow: hidden;
+    text-align: center;
+  }
+  .page-header-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 30%, rgba(0,23,255,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 30% 40% at 10% 90%, rgba(0,23,255,0.07) 0%, transparent 60%),
+      var(--black);
+  }
+  .page-header-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,23,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,23,255,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .page-header-content { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
+
+  .page-label {
+    display: inline-block; margin-bottom: 1.2rem;
+    font-family: 'Lora', serif; font-size: 0.76rem;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--blue-bright);
+    border: 1px solid rgba(0,23,255,0.35); border-radius: 20px;
+    padding: 0.3rem 1rem; background: rgba(0,23,255,0.08);
+    animation: fade-up 0.7s ease both;
+  }
+  .page-header h1 {
+    font-family: 'Eczar', serif;
+    font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+    font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--blue) 0%, #5566ff 35%, #99aaff 70%, var(--white) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 1.2rem;
+    animation: fade-up 0.8s ease 0.1s both;
+  }
+  .page-header p {
+    font-family: 'Lora', serif; font-size: 1.1rem;
+    color: rgba(255,255,255,0.65); line-height: 1.8;
+    animation: fade-up 0.8s ease 0.2s both;
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MAIN CONTENT ── */
+  .container { max-width: 1020px; margin: 0 auto; padding: 0 2rem; }
+
+  section { padding: 5rem 0; }
+
+  .section-label {
+    font-family: 'Lora', serif; font-size: 0.74rem;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--blue-bright); margin-bottom: 0.7rem;
+  }
+  .section-title {
+    font-family: 'Eczar', serif;
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    font-weight: 700; color: var(--white); line-height: 1.15;
+    margin-bottom: 1.2rem;
+  }
+
+  /* ── STORY SECTION ── */
+  .story { border-bottom: 1px solid var(--card-border); }
+  .story-layout {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: start;
+  }
+  @media (max-width: 720px) { .story-layout { grid-template-columns: 1fr; gap: 3rem; } }
+
+  .story-text p {
+    font-family: 'Lora', serif; font-size: 1.02rem;
+    color: rgba(255,255,255,0.78); line-height: 1.9;
+    margin-bottom: 1.4rem;
+  }
+  .story-text p:last-child { margin-bottom: 0; }
+  .story-text p strong {
+    color: var(--white); font-weight: 600;
+  }
+  .story-text .highlight {
+    font-style: italic; color: rgba(255,255,255,0.9);
+    border-left: 3px solid var(--blue);
+    padding-left: 1.2rem; margin: 2rem 0;
+    font-size: 1.08rem; line-height: 1.85;
+  }
+
+  .story-aside { display: flex; flex-direction: column; gap: 1.2rem; padding-top: 0.5rem; }
+
+  .aside-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 1.5rem;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .aside-card:hover {
+    border-color: rgba(0,23,255,0.5);
+    transform: translateX(4px);
+  }
+  .aside-card-top {
+    display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem;
+  }
+  .aside-icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: rgba(0,23,255,0.12);
+    border: 1px solid rgba(0,23,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .aside-card h4 {
+    font-family: 'Eczar', serif; font-size: 1rem; font-weight: 700; color: var(--white);
+  }
+  .aside-card p {
+    font-family: 'Lora', serif; font-size: 0.88rem;
+    color: var(--gray); line-height: 1.65;
+  }
+
+  /* ── VALUES ── */
+  .values { background: var(--near-black); padding: 5rem 0; }
+  .values-header { text-align: center; margin-bottom: 3.5rem; }
+  .values-header .section-title { margin: 0 auto 0.6rem; }
+  .values-header p {
+    font-family: 'Lora', serif; font-size: 1rem;
+    color: var(--gray); max-width: 500px; margin: 0 auto;
+  }
+
+  .values-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+  }
+  .value-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 2rem;
+    position: relative; overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  .value-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--blue), #8899ff);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .value-card:hover {
+    border-color: rgba(0,23,255,0.5);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0,23,255,0.15);
+  }
+  .value-card:hover::before { opacity: 1; }
+
+  .value-number {
+    font-family: 'Eczar', serif; font-size: 3rem; font-weight: 800;
+    line-height: 1; margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, rgba(0,23,255,0.4), rgba(0,23,255,0.1));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .value-card h3 {
+    font-family: 'Eczar', serif; font-size: 1.15rem; font-weight: 700;
+    color: var(--white); margin-bottom: 0.6rem;
+  }
+  .value-card p {
+    font-family: 'Lora', serif; font-size: 0.91rem;
+    color: var(--gray); line-height: 1.7;
+  }
+
+  /* ── PROMISE ── */
+  .promise {
+    padding: 5rem 0;
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .promise-inner {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px; padding: 3.5rem;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .promise-inner::after {
+    content: ''; position: absolute;
+    bottom: -60px; right: -60px; width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,23,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .promise-inner::before {
+    content: ''; position: absolute;
+    top: -40px; left: -40px; width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,23,255,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .promise-quote {
+    font-family: 'Eczar', serif;
+    font-size: clamp(1.3rem, 3vw, 1.9rem);
+    font-weight: 700; line-height: 1.45;
+    background: linear-gradient(135deg, var(--blue) 0%, #7788ff 50%, var(--white) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    max-width: 680px; margin: 0 auto 1.6rem;
+    position: relative; z-index: 1;
+  }
+  .promise-sub {
+    font-family: 'Lora', serif; font-size: 1rem;
+    color: rgba(255,255,255,0.55); max-width: 500px; margin: 0 auto 2.2rem;
+    line-height: 1.8; position: relative; z-index: 1;
+  }
+  .promise-sig {
+    font-family: 'Lora', serif; font-size: 0.88rem;
+    color: var(--blue-bright); letter-spacing: 0.08em;
+    position: relative; z-index: 1;
+  }
+
+  /* ── WHO I SERVE ── */
+  .who { padding: 5rem 0; }
+  .who-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  @media (max-width: 720px) { .who-layout { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+  .who-text p {
+    font-family: 'Lora', serif; font-size: 1rem;
+    color: rgba(255,255,255,0.72); line-height: 1.85; margin-bottom: 1.2rem;
+  }
+  .who-text p strong { color: var(--white); }
+
+  .who-list { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.5rem; }
+  .who-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+  }
+  .who-item:hover { border-color: rgba(0,23,255,0.45); }
+  .who-item-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .who-item p {
+    font-family: 'Lora', serif; font-size: 0.92rem;
+    color: rgba(255,255,255,0.75); line-height: 1.65;
+  }
+  .who-item p strong { color: var(--white); }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 5rem 0;
+    background: var(--near-black);
+  }
+  .cta-inner {
+    text-align: center; max-width: 600px; margin: 0 auto;
+  }
+  .cta-inner .section-title { margin-bottom: 0.8rem; }
+  .cta-inner p {
+    font-family: 'Lora', serif; font-size: 1rem;
+    color: var(--gray); margin-bottom: 2rem; line-height: 1.8;
+  }
+  .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--blue); color: var(--white);
+    font-family: 'Eczar', serif; font-size: 1rem; font-weight: 700;
+    padding: 0.85rem 2rem; border-radius: 6px; text-decoration: none;
+    border: 2px solid var(--blue);
+    transition: all 0.25s;
+    box-shadow: 0 0 28px rgba(0,23,255,0.35);
+  }
+  .btn-primary:hover {
+    background: var(--blue-bright); border-color: var(--blue-bright);
+    box-shadow: 0 0 45px rgba(0,23,255,0.55);
+    transform: translateY(-2px);
+  }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: transparent; color: var(--white);
+    font-family: 'Eczar', serif; font-size: 1rem; font-weight: 600;
+    padding: 0.85rem 2rem; border-radius: 6px; text-decoration: none;
+    border: 2px solid rgba(255,255,255,0.22);
+    transition: all 0.25s;
+  }
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.05);
+    transform: translateY(-2px);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--black);
+    border-top: 1px solid var(--card-border);
+    padding: 2rem; text-align: center;
+    font-family: 'Lora', serif; font-size: 0.82rem;
+    color: rgba(255,255,255,0.3);
+  }
+  footer a { color: rgba(60,100,255,0.7); text-decoration: none; }
+  footer a:hover { color: var(--blue-bright); }
+  footer strong {
+    font-family: 'Eczar', serif; font-weight: 700;
+    background: linear-gradient(90deg, var(--blue), #8899ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 0.9rem 1.2rem; }
+    .nav-links li:not(:last-child) { display: none; }
+    .container { padding: 0 1.2rem; }
+    .promise-inner { padding: 2rem 1.4rem; }
+    section { padding: 3.5rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="index.html" class="nav-logo">Tori's Tech Home Help</a>
+  <ul class="nav-links">
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+    <li><a href="index.html#pricing">Pricing</a></li>
+    <li><a href="index.html#faq">FAQ</a></li>
+    <li><a href="index.html#contact" class="nav-cta">Book Now</a></li>
+  </ul>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-grid"></div>
+  <div class="page-header-content">
+    <div class="page-label">About Tori</div>
+    <h1>Tech Help With a Human Touch</h1>
+    <p>Real patience. Real honesty. Real help — right here in Murfreesboro, TN.</p>
+  </div>
+</div>
+
+<!-- ── STORY ── -->
+<section class="story">
+  <div class="container">
+    <div class="story-layout">
+
+      <div class="story-text">
+        <p class="section-label">My Story</p>
+        <h2 class="section-title">Why I Started Tori's Tech Home Help</h2>
+
+        <p>
+          Technology has always been my thing. <strong>Not just using it — understanding it.</strong> Taking it apart with my mind, figuring out how it works, and then turning around and explaining it to someone else in plain language. That's the part I love most.
+        </p>
+        <p>
+          But here's what I kept seeing: the world's technology is moving at an incredible pace, and a lot of people — good, smart, capable people — are being left behind. Not because they can't learn. Because nobody has taken the time to teach them with patience and without making them feel foolish for asking.
+        </p>
+
+        <blockquote class="highlight">
+          "Technology should connect people to the world — not make them feel shut out of it. That's exactly what drove me to start this business."
+        </blockquote>
+
+        <p>
+          I started Tori's Tech Home Help because I believe everyone deserves to feel confident with the devices in their own home. <strong>Whether you're 45 or 85, whether you've had a smartphone for ten years or just got your first one</strong> — if you need help, you deserve someone who will sit down with you, take their time, and not leave until you actually understand.
+        </p>
+        <p>
+          I'm based right here in <strong>Murfreesboro, TN</strong> — and this community is mine. I'm not a call center, not a big-box store, not an app. I'm a real person who genuinely loves technology and genuinely loves helping people. That combination is rare, and it's the foundation of everything I do.
+        </p>
+      </div>
+
+      <div class="story-aside">
+        <div class="aside-card">
+          <div class="aside-card-top">
+            <div class="aside-icon">💙</div>
+            <h4>Passion for Technology</h4>
+          </div>
+          <p>Technology isn't just a job — it's something I've always been drawn to. That genuine love comes through in every session.</p>
+        </div>
+        <div class="aside-card">
+          <div class="aside-card-top">
+            <div class="aside-icon">🕐</div>
+            <h4>Unlimited Patience</h4>
+          </div>
+          <p>I don't rush. I don't sigh. I don't make you feel slow. Everyone learns differently and I meet you exactly where you are.</p>
+        </div>
+        <div class="aside-card">
+          <div class="aside-card-top">
+            <div class="aside-icon">🤝</div>
+            <h4>Honest to the Core</h4>
+          </div>
+          <p>If I can't fix something, I'll tell you — and I'll help you find someone who can. You'll never pay for work that didn't solve your problem.</p>
+        </div>
+        <div class="aside-card">
+          <div class="aside-card-top">
+            <div class="aside-icon">📍</div>
+            <h4>Proudly Local</h4>
+          </div>
+          <p>Murfreesboro is my home. When you hire me, you're supporting a local neighbor who's personally invested in this community.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── VALUES ── -->
+<section class="values">
+  <div class="container">
+    <div class="values-header">
+      <p class="section-label">What I Stand For</p>
+      <h2 class="section-title">My Core Values</h2>
+      <p>These aren't just words on a page — they're the standard I hold myself to in every single session.</p>
+    </div>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-number">01</div>
+        <h3>Honesty Above Everything</h3>
+        <p>If a problem is outside my ability, I will always tell you upfront — clearly and kindly — and do my best to point you toward someone who can help. You will never pay for a problem I couldn't solve. That's a promise.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-number">02</div>
+        <h3>Patience Without Limit</h3>
+        <p>Technology can be frustrating, and feeling confused is never your fault. I take all the time you need — no rushing, no eye rolls, no making you feel bad for asking the same question twice. You'll leave every session feeling more confident than when we started.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-number">03</div>
+        <h3>Teaching, Not Just Fixing</h3>
+        <p>Anyone can come in, poke around, and walk out. I explain what I'm doing and why, so that next time you'll know too. The goal is your independence — not your dependence on me.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-number">04</div>
+        <h3>Dedication to the Finish</h3>
+        <p>I don't give up on problems. If something stumps me, I research it, dig into it, and come back with answers. You hired me to solve a problem — and I won't stop until I do, or I've found someone who can.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-number">05</div>
+        <h3>Respect for Your Privacy</h3>
+        <p>Your devices contain your life. I never access anything without your permission, I never store your personal information, and I treat everything I see with complete discretion.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-number">06</div>
+        <h3>Fair, Transparent Pricing</h3>
+        <p>You'll always know what a session costs before we start. No surprise charges, no upselling, no confusion. Just honest work at a fair price — every single time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROMISE ── -->
+<section class="promise">
+  <div class="container">
+    <div class="promise-inner">
+      <p class="promise-quote">
+        "If I can't fix it, I'll tell you honestly — and I'll help you find someone who can. You will never pay for a problem that didn't get solved."
+      </p>
+      <p class="promise-sub">
+        That's not a sales line. It's the standard I hold myself to every single day, with every single client.
+      </p>
+      <p class="promise-sig">— Tori &nbsp;·&nbsp; Tori's Tech Home Help &nbsp;·&nbsp; Murfreesboro, TN</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHO I SERVE ── -->
+<section class="who">
+  <div class="container">
+    <div class="who-layout">
+
+      <div class="who-text">
+        <p class="section-label">Who I Help</p>
+        <h2 class="section-title">Technology Moves Fast.<br>You Deserve Help Keeping Up.</h2>
+        <p>
+          I didn't start this business for one type of person. I started it for <strong>anyone who has ever felt lost, frustrated, or left behind by technology</strong> — and that's more people than you might think.
+        </p>
+        <p>
+          The world's devices change constantly. New phones, new apps, new settings, new everything. It's a lot to keep up with — even for people who consider themselves pretty tech-savvy. There's no shame in needing a guide.
+        </p>
+        <p>
+          <strong>If you have a device that isn't doing what you need it to do, I'm here.</strong>
+        </p>
+      </div>
+
+      <div class="who-list">
+        <div class="who-item">
+          <div class="who-item-icon">👩‍👧</div>
+          <p><strong>People 40 and older</strong> who want to use their phone, tablet, or computer with confidence — not frustration.</p>
+        </div>
+        <div class="who-item">
+          <div class="who-item-icon">👨‍👩‍👧‍👦</div>
+          <p><strong>Busy families</strong> who need devices set up, troubleshot, or explained without the stress.</p>
+        </div>
+        <div class="who-item">
+          <div class="who-item-icon">📦</div>
+          <p><strong>People going through life transitions</strong> — moving, retiring, or getting their first smartphone.</p>
+        </div>
+        <div class="who-item">
+          <div class="who-item-icon">🙋</div>
+          <p><strong>Anyone</strong> who's ever Googled a fix, gotten more confused, and wished they had someone patient to just walk them through it.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner">
+      <p class="section-label">Let's Work Together</p>
+      <h2 class="section-title">Ready to Stop Struggling With Your Devices?</h2>
+      <p>Book a session today — in your home, at a coffee shop, or by video call. Same-week availability in Murfreesboro, TN.</p>
+      <div class="cta-buttons">
+        <a href="index.html#contact" class="btn-primary">📅 Book a Session</a>
+        <a href="tel:6157077213" class="btn-secondary">📞 (615) 707-7213</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p><strong>Tori's Tech Home Help</strong> &nbsp;·&nbsp; Murfreesboro, TN &nbsp;·&nbsp; <a href="tel:6157077213">(615) 707-7213</a> &nbsp;·&nbsp; <a href="mailto:t.hudd7495@gmail.com">t.hudd7495@gmail.com</a></p>
+  <p style="margin-top:0.5rem">Serving Rutherford County &nbsp;·&nbsp; In-Home, Remote &amp; Meet-Up Sessions Available</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.value-card, .aside-card, .who-item, .promise-inner').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(22px)';
+    el.style.transition = `opacity 0.55s ease ${i * 0.07}s, transform 0.55s ease ${i * 0.07}s`;
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
