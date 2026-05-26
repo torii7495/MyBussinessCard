@@ -494,6 +494,19 @@
   }
   .form-group select option { background: #111; }
   .form-group textarea { resize: vertical; min-height: 90px; }
+  .error-message {
+    min-height: 1.2rem;
+    font-family: 'Lora', serif;
+    font-size: 0.82rem;
+    color: #ff7a8b;
+    margin-top: 0.25rem;
+  }
+  .form-group input.invalid,
+  .form-group select.invalid,
+  .form-group textarea.invalid {
+    border-color: #ff7a8b;
+    box-shadow: 0 0 0 3px rgba(255,122,139,0.15);
+  }
 
   .form-submit {
     margin-top: 1.2rem; width: 100%;
@@ -806,37 +819,44 @@
         </a>
       </div>
       <div class="contact-form">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Your Name</label>
-            <input type="text" placeholder="Jane Smith">
+        <form id="contactForm" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="contactName">Your Name</label>
+              <input id="contactName" name="contactName" type="text" placeholder="Jane Smith" required>
+              <div class="error-message" aria-live="polite"></div>
+            </div>
+            <div class="form-group">
+              <label for="contactPhone">Phone Number</label>
+              <input id="contactPhone" name="contactPhone" type="tel" placeholder="(615) 555-0000" required>
+              <div class="error-message" aria-live="polite"></div>
+            </div>
+            <div class="form-group">
+              <label for="deviceType">What Device Needs Help?</label>
+              <select id="deviceType" name="deviceType" required>
+                <option value="">Select a device...</option>
+                <option>iPhone or iPad</option>
+                <option>Android Phone or Tablet</option>
+                <option>Windows Computer or Laptop</option>
+                <option>Smart TV or Streaming Device</option>
+                <option>Multiple Devices</option>
+                <option>Not Sure</option>
+              </select>
+              <div class="error-message" aria-live="polite"></div>
+            </div>
+            <div class="form-group">
+              <label for="preferredTime">Preferred Day / Time</label>
+              <input id="preferredTime" name="preferredTime" type="text" placeholder="e.g. Tuesday afternoon" required>
+              <div class="error-message" aria-live="polite"></div>
+            </div>
+            <div class="form-group full">
+              <label for="contactDetails">Briefly describe what's going on (optional)</label>
+              <textarea id="contactDetails" name="contactDetails" placeholder="e.g. My phone keeps freezing and I can't figure out how to clear the storage..."></textarea>
+              <div class="error-message" aria-live="polite"></div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" placeholder="(615) 555-0000">
-          </div>
-          <div class="form-group">
-            <label>What Device Needs Help?</label>
-            <select>
-              <option value="">Select a device...</option>
-              <option>iPhone or iPad</option>
-              <option>Android Phone or Tablet</option>
-              <option>Windows Computer or Laptop</option>
-              <option>Smart TV or Streaming Device</option>
-              <option>Multiple Devices</option>
-              <option>Not Sure</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Preferred Day / Time</label>
-            <input type="text" placeholder="e.g. Tuesday afternoon">
-          </div>
-          <div class="form-group full">
-            <label>Briefly describe what's going on (optional)</label>
-            <textarea placeholder="e.g. My phone keeps freezing and I can't figure out how to clear the storage..."></textarea>
-          </div>
-        </div>
-        <button class="form-submit" onclick="handleSubmit(event)">📅 Request a Session</button>
+          <button type="submit" class="form-submit">📅 Request a Session</button>
+        </form>
       </div>
     </div>
   </div>
@@ -856,18 +876,81 @@
     if (!isOpen) item.classList.add('open');
   }
 
+  function setError(input, message) {
+    const group = input.closest('.form-group');
+    const error = group.querySelector('.error-message');
+    input.classList.add('invalid');
+    error.textContent = message;
+  }
+
+  function clearError(input) {
+    const group = input.closest('.form-group');
+    const error = group.querySelector('.error-message');
+    input.classList.remove('invalid');
+    error.textContent = '';
+  }
+
+  function validateForm(form) {
+    let valid = true;
+    const name = form.contactName;
+    const phone = form.contactPhone;
+    const device = form.deviceType;
+    const time = form.preferredTime;
+
+    [name, phone, device, time].forEach(clearError);
+
+    if (!name.value.trim()) {
+      setError(name, 'Please enter your name.');
+      valid = false;
+    }
+
+    const phoneValue = phone.value.trim();
+    const phonePattern = /^[0-9()+\-\.\s]{7,25}$/;
+    if (!phoneValue) {
+      setError(phone, 'Please enter a phone number.');
+      valid = false;
+    } else if (!phonePattern.test(phoneValue)) {
+      setError(phone, 'Please enter a valid phone number.');
+      valid = false;
+    }
+
+    if (!device.value) {
+      setError(device, 'Please select the device that needs help.');
+      valid = false;
+    }
+
+    if (!time.value.trim()) {
+      setError(time, 'Please enter a preferred day or time.');
+      valid = false;
+    }
+
+    return valid;
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
-    const btn = e.target;
+    const form = e.target;
+    if (!validateForm(form)) {
+      return;
+    }
+
+    const btn = form.querySelector('.form-submit');
     btn.textContent = '✅ Request Sent! I\'ll be in touch soon.';
+    btn.disabled = true;
     btn.style.background = '#1E8449';
     btn.style.boxShadow = '0 0 20px rgba(30,132,73,0.4)';
+
     setTimeout(() => {
       btn.textContent = '📅 Request a Session';
+      btn.disabled = false;
       btn.style.background = '';
       btn.style.boxShadow = '';
     }, 4000);
+
+    form.reset();
   }
+
+  document.getElementById('contactForm')?.addEventListener('submit', handleSubmit);
 
   // Smooth reveal on scroll
   const observer = new IntersectionObserver((entries) => {
