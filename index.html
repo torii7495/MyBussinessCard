@@ -952,7 +952,30 @@
   }
 
   document.getElementById('contactForm')?.addEventListener('submit', handleSubmit);
+  
+  // Phone input auto-formatting: (123) 456-7890
+  function formatPhoneForDisplay(value) {
+    const digits = (value || '').replace(/\D/g, '').slice(0, 10);
+    if (!digits) return '';
+    if (digits.length < 4) return `(${digits}`;
+    if (digits.length < 7) return `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  }
 
+  const phoneInput = document.getElementById('contactPhone');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', (e) => {
+      const start = phoneInput.selectionStart;
+      const before = phoneInput.value;
+      const formatted = formatPhoneForDisplay(before);
+      phoneInput.value = formatted;
+      // Move caret to end to avoid complex caret math; keeps typing natural for most users
+      phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+    });
+    phoneInput.addEventListener('blur', () => {
+      phoneInput.value = formatPhoneForDisplay(phoneInput.value);
+    });
+  }
   // Smooth reveal on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
