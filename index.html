@@ -934,21 +934,61 @@
     if (!validateForm(form)) {
       return;
     }
+    // Send form data directly to a form endpoint (no mail client).
+    // Recommended: create a Formspree form and paste your endpoint URL below.
+    const FORM_ENDPOINT = 'https://formspree.io/f/mykavbgk'; // <-- replace with your endpoint
+
+    const name = form.contactName.value.trim();
+    const phone = form.contactPhone.value.trim();
+    const device = form.deviceType.value || 'Not specified';
+    const timePref = form.preferredTime.value.trim() || 'Not specified';
+    const details = form.contactDetails.value.trim() || 'No additional details.';
+
+    const payload = {
+      name,
+      phone,
+      device,
+      preferredTime: timePref,
+      details,
+    };
 
     const btn = form.querySelector('.form-submit');
-    btn.textContent = '✅ Request Sent! I\'ll be in touch soon.';
+    btn.textContent = 'Sending...';
     btn.disabled = true;
-    btn.style.background = '#1E8449';
-    btn.style.boxShadow = '0 0 20px rgba(30,132,73,0.4)';
 
-    setTimeout(() => {
-      btn.textContent = '📅 Request a Session';
+    fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }).then(async (res) => {
+      if (res.ok) {
+        btn.textContent = '✅ Request Sent';
+        btn.style.background = '#1E8449';
+        btn.style.boxShadow = '0 0 20px rgba(30,132,73,0.4)';
+        setTimeout(() => {
+          btn.textContent = '📅 Request a Session';
+          btn.disabled = false;
+          btn.style.background = '';
+          btn.style.boxShadow = '';
+        }, 3000);
+        form.reset();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to send form');
+      }
+    }).catch(err => {
+      console.error('Form send error', err);
+      btn.textContent = 'Send Failed — Try Again';
       btn.disabled = false;
-      btn.style.background = '';
-      btn.style.boxShadow = '';
-    }, 4000);
-
-    form.reset();
+      setTimeout(() => { btn.textContent = '📅 Request a Session'; }, 3000);
+      // Optionally show a visible error to the user
+      const phoneField = form.contactPhone;
+      const errGroup = phoneField.closest('.form-group').querySelector('.error-message');
+      if (errGroup) errGroup.textContent = 'There was a problem sending the request. Try again.';
+    });
   }
 
   document.getElementById('contactForm')?.addEventListener('submit', handleSubmit);
