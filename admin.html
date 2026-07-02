@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Tori's Tech Home Help</title>
+<link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #0017FF;
+    --blue-bright: #3040ff;
+    --blue-glow: rgba(0,23,255,0.35);
+    --black: #000000;
+    --near-black: #080810;
+    --card-bg: #0a0c1a;
+    --card-border: rgba(0,23,255,0.22);
+    --white: #ffffff;
+    --gray: #9aa0c4;
+    --green: #2ecc71;
+    --green-bg: rgba(46,204,113,0.1);
+    --red: #e74c3c;
+    --red-bg: rgba(231,76,60,0.1);
+    --yellow: #f1c40f;
+    --yellow-bg: rgba(241,196,15,0.1);
+    --purple: #9b59b6;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Lora', serif; background: var(--black); color: var(--white); min-height: 100vh; }
+
+  /* ── LOGIN SCREEN ── */
+  #loginScreen {
+    position: fixed; inset: 0; z-index: 1000;
+    background: var(--black);
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  .login-bg {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(0,23,255,0.14) 0%, transparent 70%);
+  }
+  .login-box {
+    position: relative; z-index: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 2.8rem 2.4rem;
+    width: 100%; max-width: 400px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,23,255,0.15);
+  }
+  .login-logo {
+    font-family: 'Eczar', serif; font-size: 1.1rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--blue), #8899ff, var(--white));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0.3rem;
+  }
+  .login-subtitle { font-size: 0.78rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2rem; }
+  .login-box h2 { font-family: 'Eczar', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .login-box p { font-size: 0.88rem; color: var(--gray); margin-bottom: 1.8rem; }
+  .login-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; text-align: left; }
+  .login-group label { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); }
+  .login-group input {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px; padding: 0.75rem 1rem;
+    font-family: 'Lora', serif; font-size: 0.95rem; color: var(--white);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .login-group input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,23,255,0.15); }
+  .login-error { font-size: 0.82rem; color: var(--red); margin-bottom: 0.8rem; display: none; }
+  .login-error.show { display: block; }
+  .btn-login {
+    width: 100%; padding: 0.85rem; border: none; border-radius: 6px; cursor: pointer;
+    background: var(--blue); color: var(--white);
+    font-family: 'Eczar', serif; font-size: 1rem; font-weight: 700;
+    box-shadow: 0 0 24px rgba(0,23,255,0.35);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .btn-login:hover { background: var(--blue-bright); box-shadow: 0 0 40px rgba(0,23,255,0.55); transform: translateY(-1px); }
+  .login-hint { margin-top: 1.2rem; font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+
+  /* ── ADMIN LAYOUT ── */
+  #adminApp { display: none; min-height: 100vh; }
+
+  /* NAV */
+  .admin-nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 2rem;
+    background: rgba(0,0,0,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .admin-nav-left { display: flex; align-items: center; gap: 1rem; }
+  .admin-badge { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; background: rgba(0,23,255,0.2); border: 1px solid rgba(0,23,255,0.4); color: var(--blue-bright); padding: 0.2rem 0.7rem; border-radius: 20px; }
+  .admin-nav-logo { font-family: 'Eczar', serif; font-size: 1.1rem; font-weight: 800; background: linear-gradient(90deg, var(--blue), #8899ff, var(--white)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .admin-nav-right { display: flex; align-items: center; gap: 1rem; }
+  .admin-user { font-size: 0.82rem; color: var(--gray); }
+  .btn-logout { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3); color: var(--red); padding: 0.35rem 0.9rem; border-radius: 4px; font-family: 'Lora', serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; }
+  .btn-logout:hover { background: rgba(231,76,60,0.25); border-color: var(--red); }
+  .btn-site { background: rgba(0,23,255,0.12); border: 1px solid var(--card-border); color: var(--gray); padding: 0.35rem 0.9rem; border-radius: 4px; font-family: 'Lora', serif; font-size: 0.82rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+  .btn-site:hover { color: var(--white); border-color: rgba(0,23,255,0.5); }
+
+  /* MAIN */
+  .admin-main { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1.2rem 1.4rem; }
+  .stat-card-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.4rem; }
+  .stat-card-value { font-family: 'Eczar', serif; font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--blue), #8899ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card-value.green { background: linear-gradient(135deg, var(--green), #27ae60); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card-value.yellow { background: linear-gradient(135deg, var(--yellow), #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card-value.red { background: linear-gradient(135deg, var(--red), #c0392b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .toolbar-left { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
+  .search-box {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 6px; padding: 0.55rem 1rem;
+    font-family: 'Lora', serif; font-size: 0.88rem; color: var(--white);
+    outline: none; width: 220px;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--blue); }
+  .search-box::placeholder { color: var(--gray); }
+  .filter-select {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 6px; padding: 0.55rem 0.9rem;
+    font-family: 'Lora', serif; font-size: 0.88rem; color: var(--white);
+    outline: none; cursor: pointer;
+  }
+  .filter-select option { background: #111; }
+  .btn-new {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--blue); color: var(--white); border: none;
+    padding: 0.55rem 1.2rem; border-radius: 6px; cursor: pointer;
+    font-family: 'Eczar', serif; font-size: 0.92rem; font-weight: 700;
+    box-shadow: 0 0 20px rgba(0,23,255,0.3);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .btn-new:hover { background: var(--blue-bright); box-shadow: 0 0 32px rgba(0,23,255,0.5); transform: translateY(-1px); }
+
+  /* TABLE */
+  .table-wrap { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
+  .submissions-table { width: 100%; border-collapse: collapse; }
+  .submissions-table th { background: rgba(0,23,255,0.12); padding: 0.9rem 1rem; text-align: left; font-family: 'Eczar', serif; font-size: 0.85rem; font-weight: 700; color: var(--gray); letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
+  .submissions-table td { padding: 0.85rem 1rem; font-size: 0.88rem; color: rgba(255,255,255,0.82); border-bottom: 1px solid rgba(0,23,255,0.08); vertical-align: middle; }
+  .submissions-table tr:last-child td { border-bottom: none; }
+  .submissions-table tr:hover td { background: rgba(0,23,255,0.05); }
+  .col-name { font-weight: 600; color: var(--white); }
+  .col-date { color: var(--gray); font-size: 0.8rem; white-space: nowrap; }
+
+  /* STATUS BADGES */
+  .status-badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+  .status-new { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(241,196,15,0.3); }
+  .status-contacted { background: rgba(0,23,255,0.15); color: #8899ff; border: 1px solid rgba(0,23,255,0.3); }
+  .status-complete { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+
+  /* ROW ACTIONS */
+  .row-actions { display: flex; gap: 0.4rem; align-items: center; }
+  .btn-action { padding: 0.3rem 0.65rem; border-radius: 4px; border: 1px solid; font-family: 'Lora', serif; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .btn-edit { background: rgba(0,23,255,0.1); border-color: rgba(0,23,255,0.3); color: #8899ff; }
+  .btn-edit:hover { background: rgba(0,23,255,0.25); border-color: var(--blue); color: var(--white); }
+  .btn-status { background: rgba(241,196,15,0.08); border-color: rgba(241,196,15,0.25); color: var(--yellow); }
+  .btn-status:hover { background: rgba(241,196,15,0.2); }
+  .btn-delete { background: rgba(231,76,60,0.08); border-color: rgba(231,76,60,0.25); color: var(--red); }
+  .btn-delete:hover { background: rgba(231,76,60,0.2); border-color: var(--red); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 4rem 2rem; }
+  .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state p { color: var(--gray); font-size: 0.92rem; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center; padding: 2rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 2rem; width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,23,255,0.2);
+    animation: modal-in 0.25s ease;
+  }
+  @keyframes modal-in { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .modal-title { font-family: 'Eczar', serif; font-size: 1.25rem; font-weight: 700; }
+  .modal-close { background: none; border: none; color: var(--gray); font-size: 1.4rem; cursor: pointer; line-height: 1; transition: color 0.2s; padding: 0.2rem; }
+  .modal-close:hover { color: var(--white); }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .modal-group { display: flex; flex-direction: column; gap: 0.35rem; }
+  .modal-group.full { grid-column: 1 / -1; }
+  .modal-group label { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); }
+  .modal-group input, .modal-group select, .modal-group textarea {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px; padding: 0.65rem 0.9rem;
+    font-family: 'Lora', serif; font-size: 0.9rem; color: var(--white);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .modal-group input:focus, .modal-group select:focus, .modal-group textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,23,255,0.15); }
+  .modal-group select option { background: #111; }
+  .modal-group textarea { resize: vertical; min-height: 80px; }
+  .modal-group input.err, .modal-group select.err, .modal-group textarea.err { border-color: var(--red) !important; }
+  .modal-field-err { font-size: 0.74rem; color: var(--red); display: none; }
+  .modal-field-err.show { display: block; }
+  .modal-footer { display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 1.5rem; }
+  .btn-cancel { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--gray); padding: 0.65rem 1.2rem; border-radius: 6px; font-family: 'Lora', serif; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+  .btn-cancel:hover { border-color: rgba(255,255,255,0.4); color: var(--white); }
+  .btn-save { background: var(--blue); border: none; color: var(--white); padding: 0.65rem 1.6rem; border-radius: 6px; font-family: 'Eczar', serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; box-shadow: 0 0 18px rgba(0,23,255,0.3); transition: all 0.2s; }
+  .btn-save:hover { background: var(--blue-bright); box-shadow: 0 0 30px rgba(0,23,255,0.5); }
+
+  /* DELETE CONFIRM MODAL */
+  .delete-modal { max-width: 420px; text-align: center; }
+  .delete-modal .del-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+  .delete-modal h3 { font-family: 'Eczar', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .delete-modal p { font-size: 0.88rem; color: var(--gray); margin-bottom: 1.5rem; line-height: 1.7; }
+  .btn-confirm-delete { background: var(--red); border: none; color: var(--white); padding: 0.7rem 1.6rem; border-radius: 6px; font-family: 'Eczar', serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-confirm-delete:hover { background: #c0392b; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 8px; padding: 0.9rem 1.4rem;
+    font-family: 'Lora', serif; font-size: 0.88rem; color: var(--white);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    display: none; align-items: center; gap: 0.7rem;
+    animation: toast-in 0.3s ease;
+    max-width: 320px;
+  }
+  .toast.show { display: flex; }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* VIEW DETAIL MODAL */
+  .detail-row { display: flex; flex-direction: column; gap: 0.2rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(0,23,255,0.1); }
+  .detail-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .detail-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); }
+  .detail-value { font-size: 0.95rem; color: var(--white); line-height: 1.6; }
+
+  @media (max-width: 700px) {
+    .admin-main { padding: 1rem; }
+    .modal-grid { grid-template-columns: 1fr; }
+    .submissions-table th:nth-child(4), .submissions-table td:nth-child(4),
+    .submissions-table th:nth-child(5), .submissions-table td:nth-child(5) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="loginScreen">
+  <div class="login-bg"></div>
+  <div class="login-box">
+    <div class="login-logo">Tori's Tech Home Help</div>
+    <div class="login-subtitle">Admin Portal</div>
+    <h2>🔐 Sign In</h2>
+    <p>Enter your admin credentials to access the dashboard.</p>
+    <div class="login-group">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="admin" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="login-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="login-error" id="loginError">❌ Incorrect username or password.</div>
+    <button class="btn-login" onclick="doLogin()">Sign In →</button>
+    <p class="login-hint">Default: admin / tori2024</p>
+  </div>
+</div>
+
+<!-- ══ ADMIN APP ══ -->
+<div id="adminApp">
+
+  <!-- NAV -->
+  <nav class="admin-nav">
+    <div class="admin-nav-left">
+      <span class="admin-nav-logo">Tori's Tech Home Help</span>
+      <span class="admin-badge">Admin</span>
+    </div>
+    <div class="admin-nav-right">
+      <span class="admin-user" id="adminUserLabel"></span>
+      <a href="index.html" class="btn-site">← Back to Site</a>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="admin-main">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Total Submissions</div><div class="stat-card-value" id="statTotal">0</div></div>
+      <div class="stat-card"><div class="stat-card-label">New</div><div class="stat-card-value yellow" id="statNew">0</div></div>
+      <div class="stat-card"><div class="stat-card-label">Contacted</div><div class="stat-card-value" id="statContacted">0</div></div>
+      <div class="stat-card"><div class="stat-card-label">Complete</div><div class="stat-card-value green" id="statComplete">0</div></div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <input class="search-box" type="text" placeholder="🔍 Search by name, phone, device..." oninput="renderTable()" id="searchBox">
+        <select class="filter-select" id="filterStatus" onchange="renderTable()">
+          <option value="">All Statuses</option>
+          <option value="New">New</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Complete">Complete</option>
+        </select>
+        <select class="filter-select" id="filterDevice" onchange="renderTable()">
+          <option value="">All Devices</option>
+          <option>iPhone or iPad</option>
+          <option>Android Phone or Tablet</option>
+          <option>Windows Computer or Laptop</option>
+          <option>Smart TV or Streaming Device</option>
+          <option>Multiple Devices</option>
+          <option>Not Sure</option>
+        </select>
+      </div>
+      <button class="btn-new" onclick="openCreateModal()">＋ New Submission</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table class="submissions-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Device</th>
+            <th>Preferred Time</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="empty-icon">📭</div>
+        <p>No submissions found.<br>Click <strong>+ New Submission</strong> to add one, or adjust your filters.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ CREATE / EDIT MODAL ══ -->
+<div class="modal-overlay" id="formModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">New Submission</div>
+      <button class="modal-close" onclick="closeModal('formModal')">✕</button>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-group">
+        <label>Name <span style="color:#ff4d4d">*</span></label>
+        <input type="text" id="mName" oninput="clearMErr('mName','mErrName')">
+        <span class="modal-field-err" id="mErrName">Name is required.</span>
+      </div>
+      <div class="modal-group">
+        <label>Phone <span style="color:#ff4d4d">*</span></label>
+        <input type="tel" id="mPhone" oninput="clearMErr('mPhone','mErrPhone')">
+        <span class="modal-field-err" id="mErrPhone">Valid phone number required.</span>
+      </div>
+      <div class="modal-group">
+        <label>Device <span style="color:#ff4d4d">*</span></label>
+        <select id="mDevice" onchange="clearMErr('mDevice','mErrDevice')">
+          <option value="">Select device...</option>
+          <option>iPhone or iPad</option>
+          <option>Android Phone or Tablet</option>
+          <option>Windows Computer or Laptop</option>
+          <option>Smart TV or Streaming Device</option>
+          <option>Multiple Devices</option>
+          <option>Not Sure</option>
+        </select>
+        <span class="modal-field-err" id="mErrDevice">Please select a device.</span>
+      </div>
+      <div class="modal-group">
+        <label>Preferred Day / Time <span style="color:#ff4d4d">*</span></label>
+        <input type="text" id="mTime" placeholder="e.g. Tuesday afternoon" oninput="clearMErr('mTime','mErrTime')">
+        <span class="modal-field-err" id="mErrTime">Preferred time is required.</span>
+      </div>
+      <div class="modal-group full">
+        <label>Description <span style="color:#ff4d4d">*</span></label>
+        <textarea id="mDesc" placeholder="Describe what needs help..." oninput="clearMErr('mDesc','mErrDesc')"></textarea>
+        <span class="modal-field-err" id="mErrDesc">Description is required.</span>
+      </div>
+      <div class="modal-group full">
+        <label>Status</label>
+        <select id="mStatus">
+          <option value="New">New</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Complete">Complete</option>
+        </select>
+      </div>
+      <div class="modal-group full">
+        <label>Notes (internal only)</label>
+        <textarea id="mNotes" placeholder="Any internal notes about this client..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('formModal')">Cancel</button>
+      <button class="btn-save" onclick="saveSubmission()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW DETAIL MODAL ══ -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Submission Details</div>
+      <button class="modal-close" onclick="closeModal('viewModal')">✕</button>
+    </div>
+    <div id="viewBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('viewModal')">Close</button>
+      <button class="btn-save" id="viewEditBtn">✏️ Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DELETE CONFIRM MODAL ══ -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal delete-modal">
+    <div class="del-icon">🗑️</div>
+    <h3>Delete Submission?</h3>
+    <p>This will permanently remove this submission. This action <strong>cannot be undone.</strong></p>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn-cancel" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn-confirm-delete" id="confirmDeleteBtn">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CREDENTIALS ──
+const ADMIN_CREDS = { homehelp2026: 'toristech7495' };
+
+// ── SEED DATA ──
+const SEED = [
+  { id: 1, name: 'Mary Johnson', phone: '(615) 555-0101', device: 'iPhone or iPad', time: 'Monday morning', desc: 'Cannot figure out how to back up my phone to iCloud.', status: 'New', notes: '', date: '2026-06-28' },
+  { id: 2, name: 'Robert Harris', phone: '(615) 555-0202', device: 'Windows Computer or Laptop', time: 'Wednesday afternoon', desc: 'Laptop is running very slow and keeps freezing.', status: 'Contacted', notes: 'Called 6/29, scheduled for 7/3', date: '2026-06-27' },
+  { id: 3, name: 'Linda Patel', phone: '(615) 555-0303', device: 'Smart TV or Streaming Device', time: 'Friday anytime', desc: 'Need help setting up Netflix and Hulu on my new TV.', status: 'Complete', notes: 'Completed visit 6/28 — very happy!', date: '2026-06-25' },
+];
+
+// ── STATE ──
+let submissions = JSON.parse(localStorage.getItem('tthh_submissions') || 'null') || JSON.parse(JSON.stringify(SEED));
+let nextId = Math.max(...submissions.map(s => s.id), 0) + 1;
+let editingId = null;
+let deletingId = null;
+
+function save() {
+  localStorage.setItem('tthh_submissions', JSON.stringify(submissions));
+}
+
+// ── AUTH ──
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (ADMIN_CREDS[user] && ADMIN_CREDS[user] === pass) {
+    sessionStorage.setItem('tthh_admin', user);
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    document.getElementById('adminUserLabel').textContent = '👤 ' + user;
+    renderTable(); updateStats();
+  } else {
+    document.getElementById('loginError').classList.add('show');
+    document.getElementById('loginPass').value = '';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('tthh_admin');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminApp').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').classList.remove('show');
+}
+
+// Auto-login if session exists
+window.addEventListener('DOMContentLoaded', () => {
+  const s = sessionStorage.getItem('tthh_admin');
+  if (s) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    document.getElementById('adminUserLabel').textContent = '👤 ' + s;
+    renderTable(); updateStats();
+  }
+});
+
+// ── STATS ──
+function updateStats() {
+  document.getElementById('statTotal').textContent = submissions.length;
+  document.getElementById('statNew').textContent = submissions.filter(s => s.status === 'New').length;
+  document.getElementById('statContacted').textContent = submissions.filter(s => s.status === 'Contacted').length;
+  document.getElementById('statComplete').textContent = submissions.filter(s => s.status === 'Complete').length;
+}
+
+// ── RENDER TABLE ──
+function renderTable() {
+  const search = document.getElementById('searchBox').value.toLowerCase();
+  const statusF = document.getElementById('filterStatus').value;
+  const deviceF = document.getElementById('filterDevice').value;
+
+  let filtered = submissions.filter(s => {
+    const matchSearch = !search || [s.name, s.phone, s.device, s.desc].some(v => v.toLowerCase().includes(search));
+    const matchStatus = !statusF || s.status === statusF;
+    const matchDevice = !deviceF || s.device === deviceF;
+    return matchSearch && matchStatus && matchDevice;
+  });
+
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = filtered.map((s, i) => `
+      <tr>
+        <td style="color:var(--gray);font-size:0.8rem">${i + 1}</td>
+        <td class="col-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(0,23,255,0.4)" onclick="viewSubmission(${s.id})">${s.name}</td>
+        <td>${s.phone}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.device}">${s.device}</td>
+        <td style="color:var(--gray)">${s.time}</td>
+        <td><span class="status-badge status-${s.status.toLowerCase()}">${s.status}</span></td>
+        <td class="col-date">${s.date}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-action btn-edit" onclick="openEditModal(${s.id})">✏️ Edit</button>
+            <button class="btn-action btn-status" onclick="cycleStatus(${s.id})">⟳ Status</button>
+            <button class="btn-action btn-delete" onclick="openDeleteModal(${s.id})">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+  updateStats();
+}
+
+// ── VIEW ──
+function viewSubmission(id) {
+  const s = submissions.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('viewBody').innerHTML = `
+    <div class="detail-row"><div class="detail-label">Name</div><div class="detail-value">${s.name}</div></div>
+    <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-value">${s.phone}</div></div>
+    <div class="detail-row"><div class="detail-label">Device</div><div class="detail-value">${s.device}</div></div>
+    <div class="detail-row"><div class="detail-label">Preferred Day / Time</div><div class="detail-value">${s.time}</div></div>
+    <div class="detail-row"><div class="detail-label">Description</div><div class="detail-value">${s.desc}</div></div>
+    <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value"><span class="status-badge status-${s.status.toLowerCase()}">${s.status}</span></div></div>
+    <div class="detail-row"><div class="detail-label">Date Submitted</div><div class="detail-value">${s.date}</div></div>
+    ${s.notes ? `<div class="detail-row"><div class="detail-label">Internal Notes</div><div class="detail-value">${s.notes}</div></div>` : ''}
+  `;
+  document.getElementById('viewEditBtn').onclick = () => { closeModal('viewModal'); openEditModal(id); };
+  openModal('viewModal');
+}
+
+// ── CREATE ──
+function openCreateModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = '＋ New Submission';
+  ['mName','mPhone','mTime','mDesc','mNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('mDevice').value = '';
+  document.getElementById('mStatus').value = 'New';
+  clearAllMErrs();
+  openModal('formModal');
+}
+
+// ── EDIT ──
+function openEditModal(id) {
+  const s = submissions.find(x => x.id === id);
+  if (!s) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = '✏️ Edit Submission';
+  document.getElementById('mName').value = s.name;
+  document.getElementById('mPhone').value = s.phone;
+  document.getElementById('mDevice').value = s.device;
+  document.getElementById('mTime').value = s.time;
+  document.getElementById('mDesc').value = s.desc;
+  document.getElementById('mStatus').value = s.status;
+  document.getElementById('mNotes').value = s.notes || '';
+  clearAllMErrs();
+  openModal('formModal');
+}
+
+// ── SAVE (CREATE or UPDATE) ──
+function saveSubmission() {
+  let valid = true;
+
+  const name = document.getElementById('mName').value.trim();
+  const phone = document.getElementById('mPhone').value.trim();
+  const device = document.getElementById('mDevice').value;
+  const time = document.getElementById('mTime').value.trim();
+  const desc = document.getElementById('mDesc').value.trim();
+  const status = document.getElementById('mStatus').value;
+  const notes = document.getElementById('mNotes').value.trim();
+
+  if (!name) { showMErr('mName','mErrName'); valid = false; }
+  if (!phone || phone.replace(/\D/g,'').length < 10) { showMErr('mPhone','mErrPhone'); valid = false; }
+  if (!device) { showMErr('mDevice','mErrDevice'); valid = false; }
+  if (!time) { showMErr('mTime','mErrTime'); valid = false; }
+  if (!desc) { showMErr('mDesc','mErrDesc'); valid = false; }
+  if (!valid) return;
+
+  if (editingId) {
+    const idx = submissions.findIndex(x => x.id === editingId);
+    submissions[idx] = { ...submissions[idx], name, phone, device, time, desc, status, notes };
+    showToast('✅ Submission updated successfully!');
+  } else {
+    const today = new Date().toISOString().split('T')[0];
+    submissions.unshift({ id: nextId++, name, phone, device, time, desc, status, notes, date: today });
+    showToast('✅ New submission created!');
+  }
+
+  save(); closeModal('formModal'); renderTable();
+}
+
+// ── STATUS CYCLE ──
+function cycleStatus(id) {
+  const s = submissions.find(x => x.id === id);
+  if (!s) return;
+  const cycle = { 'New': 'Contacted', 'Contacted': 'Complete', 'Complete': 'New' };
+  s.status = cycle[s.status];
+  save(); renderTable();
+  showToast(`⟳ Status updated to "${s.status}"`);
+}
+
+// ── DELETE ──
+function openDeleteModal(id) {
+  deletingId = id;
+  document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete();
+  openModal('deleteModal');
+}
+
+function confirmDelete() {
+  submissions = submissions.filter(x => x.id !== deletingId);
+  save(); closeModal('deleteModal'); renderTable();
+  showToast('🗑️ Submission deleted.');
+  deletingId = null;
+}
+
+// ── MODAL HELPERS ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+// ── FORM ERROR HELPERS ──
+function showMErr(fieldId, errId) {
+  document.getElementById(fieldId).classList.add('err');
+  document.getElementById(errId).classList.add('show');
+}
+function clearMErr(fieldId, errId) {
+  document.getElementById(fieldId).classList.remove('err');
+  document.getElementById(errId).classList.remove('show');
+}
+function clearAllMErrs() {
+  [['mName','mErrName'],['mPhone','mErrPhone'],['mDevice','mErrDevice'],['mTime','mErrTime'],['mDesc','mErrDesc']]
+    .forEach(([f,e]) => clearMErr(f,e));
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
