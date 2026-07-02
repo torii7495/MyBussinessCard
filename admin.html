@@ -53,7 +53,9 @@
   .login-logo {
     font-family: 'Eczar', serif; font-size: 1.1rem; font-weight: 800;
     background: linear-gradient(90deg, var(--blue), #8899ff, var(--white));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 0.3rem;
   }
   .login-subtitle { font-size: 0.78rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2rem; }
@@ -93,7 +95,7 @@
   }
   .admin-nav-left { display: flex; align-items: center; gap: 1rem; }
   .admin-badge { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; background: rgba(0,23,255,0.2); border: 1px solid rgba(0,23,255,0.4); color: var(--blue-bright); padding: 0.2rem 0.7rem; border-radius: 20px; }
-  .admin-nav-logo { font-family: 'Eczar', serif; font-size: 1.1rem; font-weight: 800; background: linear-gradient(90deg, var(--blue), #8899ff, var(--white)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .admin-nav-logo { font-family: 'Eczar', serif; font-size: 1.1rem; font-weight: 800; background: linear-gradient(90deg, var(--blue), #8899ff, var(--white)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .admin-nav-right { display: flex; align-items: center; gap: 1rem; }
   .admin-user { font-size: 0.82rem; color: var(--gray); }
   .btn-logout { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3); color: var(--red); padding: 0.35rem 0.9rem; border-radius: 4px; font-family: 'Lora', serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; }
@@ -108,10 +110,10 @@
   .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
   .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1.2rem 1.4rem; }
   .stat-card-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.4rem; }
-  .stat-card-value { font-family: 'Eczar', serif; font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--blue), #8899ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card-value.green { background: linear-gradient(135deg, var(--green), #27ae60); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card-value.yellow { background: linear-gradient(135deg, var(--yellow), #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .stat-card-value.red { background: linear-gradient(135deg, var(--red), #c0392b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card-value { font-family: 'Eczar', serif; font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--blue), #8899ff); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card-value.green { background: linear-gradient(135deg, var(--green), #27ae60); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card-value.yellow { background: linear-gradient(135deg, var(--yellow), #f39c12); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-card-value.red { background: linear-gradient(135deg, var(--red), #c0392b); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
   /* TOOLBAR */
   .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
