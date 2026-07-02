@@ -510,7 +510,7 @@ async function loadSubmissions() {
   const { data, error } = await supabaseClient
     .from(SUPABASE_TABLE)
     .select('*')
-    .order('last_contact', { ascending: false });
+    .order('date', { ascending: false });
 
   if (error) {
     console.error('Supabase load error:', error);
