@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Add Supabase library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tori's Tech Home Help — Murfreesboro, TN</title>
@@ -1033,5 +1036,51 @@
     observer.observe(el);
   });
 </script>
+<script>
+const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbGtpaWdqZ3B6cXRxa3V1aHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTk4MjcsImV4cCI6MjA5Nzg5NTgyN30.3vP9D01YAQwqkO5dGMSCLnIUGUJmgZBbkxQ08U6p6mg';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+console.log('Supabase connected!');
+async function testConnection() {
+    const { data, error } = await supabaseClient
+        .from('clients')
+        .select('*')
+    if (error) {
+        console.error('Connection error:', error);
+    } else {
+        console.log('Success! Your clients:');
+    }
+}
+
+testConnection();
+async function displayClients() {
+    const { data, error } = await supabaseClient
+        .from('clients')
+        .select('*');
+
+    if (error) {
+        document.getElementById('client-list').innerHTML =
+            'Error loading clients';
+        return;
+    }
+
+    let html = '<h3>My Clients</h3>';
+
+    data.forEach(client => {
+        html += `
+            <div style="padding: 15px; margin: 10px 0;
+                        background: #000000; border-radius: 8px;">
+                <strong>${client.name}</strong><br>
+                Phone: ${client.phone_number}
+            </div>
+        `;
+    });
+
+    document.getElementById('client-list').innerHTML = html;
+}
+
+</script> 
 </body>
 </html>
