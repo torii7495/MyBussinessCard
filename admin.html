@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Add Supabase library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Tori's Tech Home Help</title>
@@ -446,25 +448,17 @@
 // ── CREDENTIALS ──
 const ADMIN_CREDS = { homehelp2026: 'toristech7495' };
 
-// ── SEED DATA ──
-const SEED = [
-  { id: 1, name: 'Mary Johnson', phone: '(615) 555-0101', device: 'iPhone or iPad', time: 'Monday morning', desc: 'Cannot figure out how to back up my phone to iCloud.', status: 'New', notes: '', date: '2026-06-28' },
-  { id: 2, name: 'Robert Harris', phone: '(615) 555-0202', device: 'Windows Computer or Laptop', time: 'Wednesday afternoon', desc: 'Laptop is running very slow and keeps freezing.', status: 'Contacted', notes: 'Called 6/29, scheduled for 7/3', date: '2026-06-27' },
-  { id: 3, name: 'Linda Patel', phone: '(615) 555-0303', device: 'Smart TV or Streaming Device', time: 'Friday anytime', desc: 'Need help setting up Netflix and Hulu on my new TV.', status: 'Complete', notes: 'Completed visit 6/28 — very happy!', date: '2026-06-25' },
-];
+const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbGtpaWdqZ3B6cXRxa3V1aHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTk4MjcsImV4cCI6MjA5Nzg5NTgyN30.3vP9D01YAQwqkO5dGMSCLnIUGUJmgZBbkxQ08U6p6mg';
+const SUPABASE_TABLE = 'clients';
 
-// ── STATE ──
-let submissions = JSON.parse(localStorage.getItem('tthh_submissions') || 'null') || JSON.parse(JSON.stringify(SEED));
-let nextId = Math.max(...submissions.map(s => s.id), 0) + 1;
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let submissions = [];
 let editingId = null;
 let deletingId = null;
 
-function save() {
-  localStorage.setItem('tthh_submissions', JSON.stringify(submissions));
-}
-
-// ── AUTH ──
-function doLogin() {
+async function doLogin() {
   const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value;
   if (ADMIN_CREDS[user] && ADMIN_CREDS[user] === pass) {
@@ -472,7 +466,7 @@ function doLogin() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').style.display = 'block';
     document.getElementById('adminUserLabel').textContent = '👤 ' + user;
-    renderTable(); updateStats();
+    await loadSubmissions();
   } else {
     document.getElementById('loginError').classList.add('show');
     document.getElementById('loginPass').value = '';
@@ -488,18 +482,47 @@ function doLogout() {
   document.getElementById('loginError').classList.remove('show');
 }
 
-// Auto-login if session exists
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   const s = sessionStorage.getItem('tthh_admin');
   if (s) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminApp').style.display = 'block';
     document.getElementById('adminUserLabel').textContent = '👤 ' + s;
-    renderTable(); updateStats();
+    await loadSubmissions();
   }
 });
 
-// ── STATS ──
+function normalizeSubmission(item) {
+  return {
+    id: item.id,
+    name: item.name || '',
+    phone: item.phone || item.phone_number || '',
+    device: item.device || '',
+    time: item.time || item.preferred_time || item.preferred_day_time || item.preferreddaytime || '',
+    desc: item.desc || item.description || '',
+    status: item.status || 'New',
+    notes: item.notes || '',
+    date: item.date || (item.created_at ? item.created_at.split('T')[0] : ''),
+  };
+}
+
+async function loadSubmissions() {
+  const { data, error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .select('*')
+    .order('last_contact', { ascending: false });
+
+  if (error) {
+    console.error('Supabase load error:', error);
+    submissions = [];
+    showToast('⚠️ Failed to load submissions from Supabase.');
+  } else {
+    submissions = data.map(normalizeSubmission);
+  }
+
+  renderTable();
+}
+
 function updateStats() {
   document.getElementById('statTotal').textContent = submissions.length;
   document.getElementById('statNew').textContent = submissions.filter(s => s.status === 'New').length;
@@ -507,13 +530,12 @@ function updateStats() {
   document.getElementById('statComplete').textContent = submissions.filter(s => s.status === 'Complete').length;
 }
 
-// ── RENDER TABLE ──
 function renderTable() {
   const search = document.getElementById('searchBox').value.toLowerCase();
   const statusF = document.getElementById('filterStatus').value;
   const deviceF = document.getElementById('filterDevice').value;
 
-  let filtered = submissions.filter(s => {
+  const filtered = submissions.filter(s => {
     const matchSearch = !search || [s.name, s.phone, s.device, s.desc].some(v => v.toLowerCase().includes(search));
     const matchStatus = !statusF || s.status === statusF;
     const matchDevice = !deviceF || s.device === deviceF;
@@ -531,7 +553,7 @@ function renderTable() {
     tbody.innerHTML = filtered.map((s, i) => `
       <tr>
         <td style="color:var(--gray);font-size:0.8rem">${i + 1}</td>
-        <td class="col-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(0,23,255,0.4)" onclick="viewSubmission(${s.id})">${s.name}</td>
+        <td class="col-name" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(0,23,255,0.4)" onclick="viewSubmission('${s.id}')">${s.name}</td>
         <td>${s.phone}</td>
         <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.device}">${s.device}</td>
         <td style="color:var(--gray)">${s.time}</td>
@@ -539,21 +561,22 @@ function renderTable() {
         <td class="col-date">${s.date}</td>
         <td>
           <div class="row-actions">
-            <button class="btn-action btn-edit" onclick="openEditModal(${s.id})">✏️ Edit</button>
-            <button class="btn-action btn-status" onclick="cycleStatus(${s.id})">⟳ Status</button>
-            <button class="btn-action btn-delete" onclick="openDeleteModal(${s.id})">🗑️</button>
+            <button class="btn-action btn-edit" onclick="openEditModal('${s.id}')">✏️ Edit</button>
+            <button class="btn-action btn-status" onclick="cycleStatus('${s.id}')">⟳ Status</button>
+            <button class="btn-action btn-delete" onclick="openDeleteModal('${s.id}')">🗑️</button>
           </div>
         </td>
       </tr>
     `).join('');
   }
+
   updateStats();
 }
 
-// ── VIEW ──
 function viewSubmission(id) {
-  const s = submissions.find(x => x.id === id);
+  const s = submissions.find(x => x.id === id || x.id === Number(id));
   if (!s) return;
+
   document.getElementById('viewBody').innerHTML = `
     <div class="detail-row"><div class="detail-label">Name</div><div class="detail-value">${s.name}</div></div>
     <div class="detail-row"><div class="detail-label">Phone</div><div class="detail-value">${s.phone}</div></div>
@@ -564,11 +587,11 @@ function viewSubmission(id) {
     <div class="detail-row"><div class="detail-label">Date Submitted</div><div class="detail-value">${s.date}</div></div>
     ${s.notes ? `<div class="detail-row"><div class="detail-label">Internal Notes</div><div class="detail-value">${s.notes}</div></div>` : ''}
   `;
+
   document.getElementById('viewEditBtn').onclick = () => { closeModal('viewModal'); openEditModal(id); };
   openModal('viewModal');
 }
 
-// ── CREATE ──
 function openCreateModal() {
   editingId = null;
   document.getElementById('modalTitle').textContent = '＋ New Submission';
@@ -579,9 +602,8 @@ function openCreateModal() {
   openModal('formModal');
 }
 
-// ── EDIT ──
 function openEditModal(id) {
-  const s = submissions.find(x => x.id === id);
+  const s = submissions.find(x => x.id === id || x.id === Number(id));
   if (!s) return;
   editingId = id;
   document.getElementById('modalTitle').textContent = '✏️ Edit Submission';
@@ -596,8 +618,7 @@ function openEditModal(id) {
   openModal('formModal');
 }
 
-// ── SAVE (CREATE or UPDATE) ──
-function saveSubmission() {
+async function saveSubmission() {
   let valid = true;
 
   const name = document.getElementById('mName').value.trim();
@@ -615,44 +636,95 @@ function saveSubmission() {
   if (!desc) { showMErr('mDesc','mErrDesc'); valid = false; }
   if (!valid) return;
 
+  const values = {
+    name,
+    phone,
+    device,
+    time,
+    desc,
+    status,
+    notes,
+    date: new Date().toISOString().split('T')[0],
+  };
+
   if (editingId) {
-    const idx = submissions.findIndex(x => x.id === editingId);
-    submissions[idx] = { ...submissions[idx], name, phone, device, time, desc, status, notes };
+    const { error } = await supabaseClient
+      .from(SUPABASE_TABLE)
+      .update(values)
+      .eq('id', editingId);
+
+    if (error) {
+      console.error('Update error:', error);
+      showToast('⚠️ Failed to update submission.');
+      return;
+    }
+
     showToast('✅ Submission updated successfully!');
   } else {
-    const today = new Date().toISOString().split('T')[0];
-    submissions.unshift({ id: nextId++, name, phone, device, time, desc, status, notes, date: today });
+    const { error } = await supabaseClient
+      .from(SUPABASE_TABLE)
+      .insert([values]);
+
+    if (error) {
+      console.error('Insert error:', error);
+      showToast('⚠️ Failed to create submission.');
+      return;
+    }
+
     showToast('✅ New submission created!');
   }
 
-  save(); closeModal('formModal'); renderTable();
+  closeModal('formModal');
+  await loadSubmissions();
 }
 
-// ── STATUS CYCLE ──
-function cycleStatus(id) {
-  const s = submissions.find(x => x.id === id);
+async function cycleStatus(id) {
+  const s = submissions.find(x => x.id === id || x.id === Number(id));
   if (!s) return;
   const cycle = { 'New': 'Contacted', 'Contacted': 'Complete', 'Complete': 'New' };
-  s.status = cycle[s.status];
-  save(); renderTable();
-  showToast(`⟳ Status updated to "${s.status}"`);
+  const nextStatus = cycle[s.status] || 'New';
+
+  const { error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .update({ status: nextStatus })
+    .eq('id', id);
+
+  if (error) {
+    console.error('Status update error:', error);
+    showToast('⚠️ Failed to update status.');
+    return;
+  }
+
+  showToast(`⟳ Status updated to "${nextStatus}"`);
+  await loadSubmissions();
 }
 
-// ── DELETE ──
 function openDeleteModal(id) {
   deletingId = id;
   document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete();
   openModal('deleteModal');
 }
 
-function confirmDelete() {
-  submissions = submissions.filter(x => x.id !== deletingId);
-  save(); closeModal('deleteModal'); renderTable();
+async function confirmDelete() {
+  if (!deletingId) return;
+
+  const { error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .delete()
+    .eq('id', deletingId);
+
+  if (error) {
+    console.error('Delete error:', error);
+    showToast('⚠️ Failed to delete submission.');
+    return;
+  }
+
   showToast('🗑️ Submission deleted.');
   deletingId = null;
+  closeModal('deleteModal');
+  await loadSubmissions();
 }
 
-// ── MODAL HELPERS ──
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -660,21 +732,21 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 });
 
-// ── FORM ERROR HELPERS ──
 function showMErr(fieldId, errId) {
   document.getElementById(fieldId).classList.add('err');
   document.getElementById(errId).classList.add('show');
 }
+
 function clearMErr(fieldId, errId) {
   document.getElementById(fieldId).classList.remove('err');
   document.getElementById(errId).classList.remove('show');
 }
+
 function clearAllMErrs() {
   [['mName','mErrName'],['mPhone','mErrPhone'],['mDevice','mErrDevice'],['mTime','mErrTime'],['mDesc','mErrDesc']]
     .forEach(([f,e]) => clearMErr(f,e));
 }
 
-// ── TOAST ──
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
