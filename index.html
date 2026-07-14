@@ -64,8 +64,78 @@
     padding: 0.45rem 1.2rem !important; border-radius: 4px;
     font-weight: 600 !important; letter-spacing: 0.02em !important;
     transition: background 0.2s, box-shadow 0.2s !important;
+    border: none; cursor: pointer; font-family: inherit; font-size: 0.88rem;
   }
   .nav-cta:hover { background: var(--blue-bright) !important; box-shadow: 0 0 18px var(--blue-glow) !important; }
+
+  .booking-modal-overlay {
+    position: fixed; inset: 0; z-index: 250;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.2rem; background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(8px);
+  }
+  .booking-modal-overlay[hidden] { display: none; }
+  .booking-modal {
+    width: min(92vw, 460px);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px; padding: 1.5rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    position: relative;
+  }
+  .booking-modal-close {
+    position: absolute; top: 0.8rem; right: 0.8rem;
+    border: none; background: transparent; color: var(--gray);
+    font-size: 1.4rem; cursor: pointer;
+  }
+  .booking-modal-title {
+    font-family: 'Eczar', serif; font-size: 1.2rem; font-weight: 700;
+    color: var(--white); margin-bottom: 1rem;
+  }
+  .booking-modal-actions {
+    display: grid; gap: 0.8rem;
+  }
+  .booking-option {
+    width: 100%; border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 8px; padding: 0.9rem 1rem; text-align: left;
+    background: rgba(255,255,255,0.04); color: var(--white);
+    font-family: 'Lora', serif; font-size: 0.95rem; cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s, background 0.2s;
+  }
+  .booking-option:hover {
+    border-color: rgba(0,23,255,0.45);
+    background: rgba(0,23,255,0.12);
+    transform: translateY(-1px);
+  }
+  .booking-option strong { display: block; font-family: 'Eczar', serif; margin-bottom: 0.2rem; }
+
+  .calendly-modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem; background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+  }
+  .calendly-modal-overlay[hidden] { display: none; }
+  .calendly-modal {
+    width: min(96vw, 980px);
+    max-height: 92vh; overflow: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px; position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .calendly-modal-close {
+    position: absolute; top: 0.8rem; right: 0.8rem; z-index: 2;
+    border: none; background: rgba(0,0,0,0.55); color: var(--white);
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    font-size: 1.2rem;
+  }
+  .calendly-modal-frame {
+    height: min(86vh, 760px); overflow: hidden; border-radius: 14px;
+  }
+  .calendly-modal-frame .calendly-inline-widget {
+    height: 100% !important; min-width: 100% !important;
+  }
 
   /* ── HERO ── */
   .hero {
@@ -561,9 +631,35 @@
     <li><a href="about.html">About</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#faq">FAQ</a></li>
-    <li><a href="#contact" class="nav-cta">Book Now</a></li>
+    <li><button type="button" class="nav-cta" id="bookNowBtn">Book Now</button></li>
   </ul>
 </nav>
+
+<div class="booking-modal-overlay" id="bookingModalOverlay" hidden>
+  <div class="booking-modal" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
+    <button class="booking-modal-close" id="bookingModalClose" type="button" aria-label="Close">×</button>
+    <p class="booking-modal-title" id="bookingModalTitle">How would you like to book?</p>
+    <div class="booking-modal-actions">
+      <button class="booking-option" type="button" data-booking-action="calendly">
+        <strong>In-Person</strong>
+        Meet at your home or a convenient location.
+      </button>
+      <button class="booking-option" type="button" data-booking-action="calendly-remote">
+        <strong>Remote Video Session</strong>
+        Connect from wherever you are and get help step by step.
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="calendly-modal-overlay" id="calendlyModalOverlay" hidden>
+  <div class="calendly-modal" role="dialog" aria-modal="true" aria-labelledby="calendlyModalTitle">
+    <button class="calendly-modal-close" id="calendlyModalClose" type="button" aria-label="Close">×</button>
+    <div class="calendly-modal-frame">
+      <div class="calendly-inline-widget" id="calendlyWidget" data-url="https://calendly.com/t-hudd7495/new-meeting" style="min-width:320px;height:700px;"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ── HERO ── -->
 <section class="hero" id="home">
@@ -1037,6 +1133,87 @@
     observer.observe(el);
   });
 </script>
+<script>
+  const bookingModalOverlay = document.getElementById('bookingModalOverlay');
+  const bookingModalClose = document.getElementById('bookingModalClose');
+  const calendlyModalOverlay = document.getElementById('calendlyModalOverlay');
+  const calendlyModalClose = document.getElementById('calendlyModalClose');
+  const bookNowBtn = document.getElementById('bookNowBtn');
+
+  function openBookingModal() {
+    bookingModalOverlay.hidden = false;
+  }
+
+  function closeBookingModal() {
+    bookingModalOverlay.hidden = true;
+  }
+
+  function openCalendlyModal(url) {
+    const widget = document.getElementById('calendlyWidget');
+    if (widget) {
+      widget.setAttribute('data-url', url);
+      widget.innerHTML = '';
+      if (window.Calendly) {
+        window.Calendly.initInlineWidget({
+          url: url,
+          parentElement: widget,
+          prefill: {},
+        });
+      }
+    }
+    calendlyModalOverlay.hidden = false;
+  }
+
+  function closeCalendlyModal() {
+    calendlyModalOverlay.hidden = true;
+  }
+
+  bookNowBtn?.addEventListener('click', openBookingModal);
+  bookingModalClose?.addEventListener('click', closeBookingModal);
+  bookingModalOverlay?.addEventListener('click', (event) => {
+    if (event.target === bookingModalOverlay) closeBookingModal();
+  });
+
+  calendlyModalClose?.addEventListener('click', closeCalendlyModal);
+  calendlyModalOverlay?.addEventListener('click', (event) => {
+    if (event.target === calendlyModalOverlay) closeCalendlyModal();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      if (!bookingModalOverlay.hidden) closeBookingModal();
+      if (!calendlyModalOverlay.hidden) closeCalendlyModal();
+    }
+  });
+
+  document.querySelectorAll('.booking-option').forEach((button) => {
+    button.addEventListener('click', () => {
+      const action = button.getAttribute('data-booking-action');
+      const target = button.getAttribute('data-booking-target') || '#contact';
+      closeBookingModal();
+
+      if (action === 'calendly') {
+        openCalendlyModal('https://calendly.com/t-hudd7495/new-meeting');
+        return;
+      }
+
+      if (action === 'calendly-remote') {
+        openCalendlyModal('https://calendly.com/t-hudd7495/remote-video-session');
+        return;
+      }
+
+      if (target.startsWith('#')) {
+        const section = document.querySelector(target);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        window.location.href = target;
+      }
+    });
+  });
+</script>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 <script>
 const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbGtpaWdqZ3B6cXRxa3V1aHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTk4MjcsImV4cCI6MjA5Nzg5NTgyN30.3vP9D01YAQwqkO5dGMSCLnIUGUJmgZBbkxQ08U6p6mg';
