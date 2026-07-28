@@ -175,13 +175,11 @@
   </div>
 
   <script>
-    // REPLACE WITH YOUR SUPABASE CREDENTIALS
-    const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co/rest/v1/discount_codes';
+    const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbGtpaWdqZ3B6cXRxa3V1aHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTk4MjcsImV4cCI6MjA5Nzg5NTgyN30.3vP9D01YAQwqkO5dGMSCLnIUGUJmgZBbkxQ08U6p6mg';
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Helper to generate a code like SAVE-8492
     function generateCode() {
       const randomNum = Math.floor(1000 + Math.random() * 9000);
       return `WELCOME-${randomNum}`;
@@ -189,35 +187,33 @@
 
     document.getElementById('discountForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const btn = document.getElementById('submitBtn');
       const errorMsg = document.getElementById('errorMsg');
       const voucherBox = document.getElementById('voucherBox');
       const codeDisplay = document.getElementById('generatedCode');
 
       btn.disabled = true;
-      btn.innerText = "Generating...";
-      errorMsg.style.display = "none";
+      btn.innerText = 'Generating...';
+      errorMsg.style.display = 'none';
 
       const name = document.getElementById('client_name').value.trim();
       const email = document.getElementById('client_email').value.trim();
       const newCode = generateCode();
 
-      // Store in Supabase
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('discount_codes')
         .insert([{ client_name: name, client_email: email, discount_code: newCode }]);
 
       if (error) {
-        errorMsg.innerText = "Unable to generate code. Please check your connection.";
-        errorMsg.style.display = "block";
+        errorMsg.innerText = 'Unable to generate code. Please check your connection.';
+        errorMsg.style.display = 'block';
         btn.disabled = false;
-        btn.innerText = "Get My Code";
+        btn.innerText = 'Get My Code';
       } else {
-        // Show the generated code
-        document.getElementById('discountForm').style.display = "none";
+        document.getElementById('discountForm').style.display = 'none';
         codeDisplay.innerText = newCode;
-        voucherBox.style.display = "block";
+        voucherBox.style.display = 'block';
       }
     });
   </script>
