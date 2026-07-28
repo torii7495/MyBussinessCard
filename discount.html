@@ -192,28 +192,53 @@
       const errorMsg = document.getElementById('errorMsg');
       const voucherBox = document.getElementById('voucherBox');
       const codeDisplay = document.getElementById('generatedCode');
+      const form = document.getElementById('discountForm');
 
       btn.disabled = true;
-      btn.innerText = 'Generating...';
+      btn.innerText = 'Checking...';
       errorMsg.style.display = 'none';
 
       const name = document.getElementById('client_name').value.trim();
       const email = document.getElementById('client_email').value.trim();
-      const newCode = generateCode();
 
-      const { data, error } = await supabaseClient
-        .from('discount_codes')
-        .insert([{ client_name: name, client_email: email, discount_code: newCode }]);
+      try {
+        const { data: existingUsers, error: checkError } = await supabaseClient
+          .from('discount_codes')
+          .select('client_email')
+          .eq('client_email', email);
 
-      if (error) {
-        errorMsg.innerText = 'Unable to generate code. Please check your connection.';
+        if (checkError) {
+          throw checkError;
+        }
+
+        if (existingUsers && existingUsers.length > 0) {
+          errorMsg.innerText = "We're sorry, it seems you've already used your first time discount code!";
+          errorMsg.style.display = 'block';
+          btn.disabled = false;
+          btn.innerText = 'Get My Code';
+          return;
+        }
+
+        btn.innerText = 'Generating...';
+        const newCode = generateCode();
+
+        const { error: insertError } = await supabaseClient
+          .from('discount_codes')
+          .insert([{ client_name: name, client_email: email, discount_code: newCode }]);
+
+        if (insertError) {
+          throw insertError;
+        }
+
+        form.style.display = 'none';
+        codeDisplay.innerText = newCode;
+        voucherBox.style.display = 'block';
+      } catch (err) {
+        console.error('Supabase Error:', err);
+        errorMsg.innerText = 'Error: ' + (err.message || 'Something went wrong. Please try again.');
         errorMsg.style.display = 'block';
         btn.disabled = false;
         btn.innerText = 'Get My Code';
-      } else {
-        document.getElementById('discountForm').style.display = 'none';
-        codeDisplay.innerText = newCode;
-        voucherBox.style.display = 'block';
       }
     });
   </script>
