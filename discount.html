@@ -5,26 +5,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Get Your First-Time Discount</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; color: #333; }
-    .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
-    h1 { margin-top: 0; color: #1e293b; }
+    :root {
+      --blue: #0017FF;
+      --blue-bright: #3040ff;
+      --blue-glow: rgba(0, 23, 255, 0.35);
+      --blue-soft: rgba(0, 23, 255, 0.12);
+      --black: #000000;
+      --near-black: #080810;
+      --white: #ffffff;
+      --off-white: #f0f2ff;
+      --gray: #a0a8cc;
+      --light-gray: #e8eaf5;
+      --card-bg: #0a0c1a;
+      --card-border: rgba(0, 23, 255, 0.25);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, rgba(0, 23, 255, 0.22), transparent 45%), var(--black);
+      color: var(--white);
+    }
+
+    .card {
+      width: min(100%, 540px);
+      background: linear-gradient(145deg, rgba(10, 12, 26, 0.98), rgba(8, 8, 16, 0.96));
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.02), 0 20px 45px rgba(0, 0, 0, 0.35), 0 0 28px var(--blue-glow);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: var(--off-white);
+      font-family: 'Eczar', serif;
+      font-size: 2rem;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--gray);
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+
     .form-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
-    input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-    button { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1rem; margin-top: 10px; }
-    button:hover { background: #1d4ed8; }
-    
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+      color: var(--light-gray);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.04);
+      color: var(--white);
+    }
+
+    input::placeholder { color: #7a84a8; }
+
+    button {
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+
+    button:hover {
+      background: var(--blue-bright);
+      box-shadow: 0 0 18px var(--blue-glow);
+    }
+
     /* Voucher Box Styling */
-    .voucher-box { display: none; background: #f0fdf4; border: 2px dashed #16a34a; border-radius: 8px; padding: 20px; margin-top: 20px; }
-    .code-display { font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; color: #15803d; margin: 10px 0; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; display: inline-block; }
+    .voucher-box {
+      display: none;
+      background: rgba(0, 23, 255, 0.12);
+      border: 1px dashed rgba(0, 23, 255, 0.45);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .voucher-box h3 {
+      color: var(--off-white);
+      margin: 0 0 8px 0;
+    }
+
+    .code-display {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin: 10px 0;
+      background: rgba(255,255,255,0.06);
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: inline-block;
+    }
+
+    .voucher-note {
+      font-size: 0.95rem;
+      color: var(--gray);
+      margin-bottom: 0;
+    }
+
+    #errorMsg {
+      color: #ff8a8a;
+      font-weight: 700;
+      margin-top: 15px;
+      display: none;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
     <h1>Claim 15% Off Your First Session</h1>
-    <p style="color: #64748b; margin-bottom: 25px;">Enter your details below to generate a unique discount code for your first booking.</p>
+    <p class="subtitle">Enter your details below to generate a unique discount code for your first booking.</p>
 
     <form id="discountForm">
       <div class="form-group">
@@ -40,12 +166,12 @@
 
     <!-- Success Voucher Display -->
     <div id="voucherBox" class="voucher-box">
-      <h3 style="margin: 0; color: #166534;">🎉 Your Discount Code</h3>
+      <h3>🎉 Your Discount Code</h3>
       <div class="code-display" id="generatedCode">WELCOME15</div>
-      <p style="font-size: 0.9rem; color: #15803d; margin-bottom: 0;">Show or mention this code when scheduling your session!</p>
+      <p class="voucher-note">Show or mention this code when scheduling your session!</p>
     </div>
 
-    <p id="errorMsg" style="color: #ef4444; font-weight: bold; margin-top: 15px; display: none;"></p>
+    <p id="errorMsg"></p>
   </div>
 
   <script>
