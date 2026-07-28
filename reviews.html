@@ -56,15 +56,15 @@
   <div id="reviewsList">Loading reviews...</div>
 
   <script>
-    // 1. REPLACE THESE WITH YOUR SUPABASE DETAILS
-    const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co/rest/v1/';
+    // 1. Initialize the client with a different name
+    const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbGtpaWdqZ3B6cXRxa3V1aHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTk4MjcsImV4cCI6MjA5Nzg5NTgyN30.3vP9D01YAQwqkO5dGMSCLnIUGUJmgZBbkxQ08U6p6mg';
-    
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // 2. Fetch and display existing reviews
     async function fetchReviews() {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('testimonials')
         .select('*')
         .eq('is_approved', true)
@@ -113,7 +113,7 @@
         review_text: document.getElementById('review_text').value
       };
 
-      const { error } = await supabase.from('testimonials').insert([newReview]);
+      const { error } = await supabaseClient.from('testimonials').insert([newReview]);
 
       if (error) {
         status.style.color = "red";
