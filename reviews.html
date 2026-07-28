@@ -6,18 +6,75 @@
   <title>Client Reviews & Testimonials</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #333; line-height: 1.5; }
-    h1 { text-align: center; color: #111; }
-    .card { background: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    :root {
+      --blue: #0017FF;
+      --blue-bright: #3040ff;
+      --black: #000000;
+      --near-black: #080810;
+      --white: #ffffff;
+      --gray: #a0a8cc;
+      --card-bg: #0a0c1a;
+      --card-border: rgba(0, 23, 255, 0.25);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+      color: var(--white);
+      line-height: 1.6;
+      background: var(--black);
+    }
+
+    h1, h2, h3 {
+      color: var(--white);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 30px rgba(0, 23, 255, 0.12);
+    }
+
     .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; }
-    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-    button { background: #2563eb; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
-    button:hover { background: #1d4ed8; }
-    .stars { color: #f59e0b; font-size: 1.2rem; }
-    .review-item { border-bottom: 1px solid #eee; padding: 15px 0; }
-    .review-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-    .review-date { color: #888; font-size: 0.85rem; }
+    label { display: block; font-weight: bold; margin-bottom: 6px; color: var(--gray); }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.04);
+      color: var(--white);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(255,255,255,0.45);
+    }
+
+    button {
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      transition: background 0.2s ease;
+    }
+
+    button:hover { background: var(--blue-bright); }
+    .stars { color: #3040ff; font-size: 1.2rem; }
+    .review-item { border-bottom: 1px solid rgba(255,255,255,0.12); padding: 16px 0; }
+    .review-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: var(--white); }
+    .review-date { color: var(--gray); font-size: 0.85rem; }
+    #reviewsList p { color: var(--gray); }
   </style>
 </head>
 <body>
