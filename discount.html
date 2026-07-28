@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Your First-Time Discount</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; color: #333; }
+    .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
+    h1 { margin-top: 0; color: #1e293b; }
+    .form-group { margin-bottom: 15px; text-align: left; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+    input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+    button { background: #2563eb; color: white; border: none; padding: 14px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1rem; margin-top: 10px; }
+    button:hover { background: #1d4ed8; }
+    
+    /* Voucher Box Styling */
+    .voucher-box { display: none; background: #f0fdf4; border: 2px dashed #16a34a; border-radius: 8px; padding: 20px; margin-top: 20px; }
+    .code-display { font-size: 1.8rem; font-weight: bold; letter-spacing: 2px; color: #15803d; margin: 10px 0; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #bbf7d0; display: inline-block; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Claim 15% Off Your First Session</h1>
+    <p style="color: #64748b; margin-bottom: 25px;">Enter your details below to generate a unique discount code for your first booking.</p>
+
+    <form id="discountForm">
+      <div class="form-group">
+        <label for="client_name">Full Name</label>
+        <input type="text" id="client_name" required placeholder="e.g. Alex Morgan">
+      </div>
+      <div class="form-group">
+        <label for="client_email">Email Address</label>
+        <input type="email" id="client_email" required placeholder="alex@example.com">
+      </div>
+      <button type="submit" id="submitBtn">Get My Code</button>
+    </form>
+
+    <!-- Success Voucher Display -->
+    <div id="voucherBox" class="voucher-box">
+      <h3 style="margin: 0; color: #166534;">🎉 Your Discount Code</h3>
+      <div class="code-display" id="generatedCode">WELCOME15</div>
+      <p style="font-size: 0.9rem; color: #15803d; margin-bottom: 0;">Show or mention this code when scheduling your session!</p>
+    </div>
+
+    <p id="errorMsg" style="color: #ef4444; font-weight: bold; margin-top: 15px; display: none;"></p>
+  </div>
+
+  <script>
+    // REPLACE WITH YOUR SUPABASE CREDENTIALS
+    const SUPABASE_URL = 'https://yelkiigjgpzqtqkuuhxt.supabase.co/rest/v1/discount_codes';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbGtpaWdqZ3B6cXRxa3V1aHh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMTk4MjcsImV4cCI6MjA5Nzg5NTgyN30.3vP9D01YAQwqkO5dGMSCLnIUGUJmgZBbkxQ08U6p6mg';
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Helper to generate a code like SAVE-8492
+    function generateCode() {
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      return `WELCOME-${randomNum}`;
+    }
+
+    document.getElementById('discountForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('submitBtn');
+      const errorMsg = document.getElementById('errorMsg');
+      const voucherBox = document.getElementById('voucherBox');
+      const codeDisplay = document.getElementById('generatedCode');
+
+      btn.disabled = true;
+      btn.innerText = "Generating...";
+      errorMsg.style.display = "none";
+
+      const name = document.getElementById('client_name').value.trim();
+      const email = document.getElementById('client_email').value.trim();
+      const newCode = generateCode();
+
+      // Store in Supabase
+      const { data, error } = await supabase
+        .from('discount_codes')
+        .insert([{ client_name: name, client_email: email, discount_code: newCode }]);
+
+      if (error) {
+        errorMsg.innerText = "Unable to generate code. Please check your connection.";
+        errorMsg.style.display = "block";
+        btn.disabled = false;
+        btn.innerText = "Get My Code";
+      } else {
+        // Show the generated code
+        document.getElementById('discountForm').style.display = "none";
+        codeDisplay.innerText = newCode;
+        voucherBox.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
