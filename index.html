@@ -624,9 +624,10 @@
       flex-wrap: wrap;
       justify-content: flex-end;
     }
-    .nav-links li:not(:nth-last-child(2)):not(:last-child) {
+    .nav-links li:not(.discount-link):not(:nth-last-child(2)):not(:last-child) {
       display: none;
     }
+    .nav-links li.discount-link,
     .nav-links li:nth-last-child(2),
     .nav-links li:last-child {
       display: flex;
@@ -651,6 +652,7 @@
     <li><a href="about.html">About</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#faq">FAQ</a></li>
+    <li class="discount-link"><a href="discount.html" class="nav-cta" style="text-decoration:none; display:inline-block;">First Time Discount Code</a></li>
     <li><a href="reviews.html" class="nav-cta" style="text-decoration:none; display:inline-block;">Reviews</a></li>
     <li><button type="button" class="nav-cta" id="bookNowBtn">Book Now</button></li>
   </ul>
